@@ -1,3 +1,4 @@
+Models: Athlete - Coach - bookCoach
 Completed End-points - Naelah:
 
 -requestCoachBooking→ athleteController → POST 
