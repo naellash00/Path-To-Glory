@@ -18,4 +18,4 @@ Completed End-points - Naelah:
 
 -getAllCoachAthletes → coachController → GET
 
-- respondToTeammateRequest → athleteController → PUT 
+-respondToTeammateRequest → athleteController → PUT 
