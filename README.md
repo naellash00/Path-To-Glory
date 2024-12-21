@@ -1,7 +1,59 @@
-Models: Athlete - Coach - bookCoach
+Model:
+
+-Athlete 
+
+-Achievement 
+
+-Coach
+
+-BookCoach
+
+-TeammateRequest
+
+Service: 
+
+-AthleteService
+
+-BookCoachService
+
+-CoachService
+
+Controller: 
+
+-AthleteController
+
+-BookCoachController
+
+-CoachController
+
+Repository:
+
+-AchievemntReopsitory
+
+-AthleteRepository
+
+-BookCoachRepository
+
+-CoachRepository
+
+-TeammateRequestRepository
+
+DTO:
+
+-AchievemntOutDTO
+
+-AthleteOutDTO
+
+-CoachAthleteOutDTO
+
+-BookCoachOutDTO
+
+-CoachOutDTO
+
+-TeammateRequestOutDTO
 
 
-Completed End-points:
+Extra End-points:
 
 -requestCoachBooking→ athleteController → POST 
 
