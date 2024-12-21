@@ -78,7 +78,7 @@ public class CoachService { // naelah
             // the athlete in this coach booking
             Athlete athlete = booking.getAthlete();
             // this athlete dto
-            CoachAthleteOutDTO coachAthlete = new CoachAthleteOutDTO(athlete.getFullName(), athlete.getUsername(),athlete.getSportName());
+            CoachAthleteOutDTO coachAthlete = new CoachAthleteOutDTO(athlete.getFullName(), athlete.getUsername(),athlete.getSportType());
             athletes.add(coachAthlete);
         }
         return athletes;

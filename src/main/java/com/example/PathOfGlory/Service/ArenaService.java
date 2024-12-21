@@ -1,25 +1,25 @@
 package com.example.PathOfGlory.Service;
 
 import com.example.PathOfGlory.ApiResponse.ApiException;
-import com.example.PathOfGlory.DTO.ArenaDTO;
-import com.example.PathOfGlory.DTO.BookOfferingDTO;
+import com.example.PathOfGlory.DTO.*;
 import com.example.PathOfGlory.Model.*;
 import com.example.PathOfGlory.Repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.example.PathOfGlory.Model.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@org.springframework.stereotype.Service
 @RequiredArgsConstructor
 public class ArenaService { //Renad
     // 1. Declare a dependency for using Dependency Injection
     private final ArenaRepository arenaRepository;
-    private final BookOfferingRepository bookOfferingRepository;
+    private final BookServiceRepository bookServiceRepository;
     private final EventHeldRequestRepository eventHeldRequestRepository;
     private final EventRepository eventRepository;
     private final AthleteRepository athleteRepository;
+    private final ServiceRepository serviceRepository;
 
     // 2. CRUD
     // 2.1 GET
@@ -27,15 +27,37 @@ public class ArenaService { //Renad
         List<Arena> arenas = arenaRepository.findAll();
         List<ArenaDTO> arenaDTOS = new ArrayList<>();
         for (Arena arena : arenas) {
-            ArenaDTO arenaDTO = new ArenaDTO(arena.getUsername(), arena.getName(), arena.getCity(), arena.getLocation());
+            // Map Services to ServiceDTO
+            List<ServiceDTO> serviceDTOS = new ArrayList<>();
+            for (Service service : arena.getServices()) {
+                serviceDTOS.add(new ServiceDTO(service.getName(), service.getDescription(), service.getPricePerDay()));
+            }
+
+            // Map Events to EventDTO
+            List<EventDTO> eventDTOS = new ArrayList<>();
+            for (Event event : arena.getEvents()) {
+                eventDTOS.add(new EventDTO(event.getName(), event.getDescription(), event.getCity(), event.getLocation(), event.getStartDate(), event.getEndDate()));
+            }
+
+            // Create ArenaDTO
+            ArenaDTO arenaDTO = new ArenaDTO(
+                    arena.getUsername(),
+                    arena.getName(),
+                    arena.getCity(),
+                    arena.getLocation(),
+                    serviceDTOS,
+                    eventDTOS
+            );
+
             arenaDTOS.add(arenaDTO);
         }
+
         return arenaDTOS;
     }
 
     // 2.2 POST
     public void addArena(Arena arena) {
-        arena.setIsActivated("not active");
+        arena.setIsActivated("Not Active");
         arenaRepository.save(arena);
     }
 
@@ -46,6 +68,8 @@ public class ArenaService { //Renad
             throw new ApiException("Arena Not Found.");
         }
         oldArena.setName(arena.getName());
+        oldArena.setUsername(arena.getUsername());
+        oldArena.setPassword(arena.getPassword());
         oldArena.setCity(arena.getCity());
         oldArena.setLocation(arena.getLocation());
         oldArena.setLicense(arena.getLicense());
@@ -60,77 +84,78 @@ public class ArenaService { //Renad
             throw new ApiException("Arena Not Found.");
         }
 
-        oldArena.setOfferings(null);
+        oldArena.setServices(null);
         arenaRepository.delete(oldArena);
     }
 
     // 3. Extra endpoint:
-    // 3.1 Endpoint to allow arena to handel an athlete request to book an offering
-    public void handleBookOfferingRequest(Integer arenaId, Integer bookingId, boolean isAccepted) {
+    // 3.1 Endpoint to allow arena to handel an athlete request to book a service
+    public void handleBookServiceRequest(Integer arenaId, Integer bookingId, boolean isAccepted) {
 
         // Validate arena and booking
         Arena arena = arenaRepository.findArenaById(arenaId);
-        BookOffering bookOffering = bookOfferingRepository.findBookOfferingById(bookingId);
+        BookService bookService = bookServiceRepository.findBookServiceById(bookingId);
 
         // Check if the booking has been already accepted
-        if (bookOffering.getStatus().equalsIgnoreCase("Accepted")) {
+        if (bookService.getStatus().equalsIgnoreCase("Accepted")) {
             throw new ApiException("Booking Already Accepted.");
         }
 
         // Check if the booking has been already rejected
-        if (bookOffering.getStatus().equalsIgnoreCase("Rejected")) {
+        if (bookService.getStatus().equalsIgnoreCase("Rejected")) {
             throw new ApiException("Booking Already Rejected.");
         }
 
-        if (arena == null && bookOffering == null) {
+        if (arena == null && bookService == null) {
             throw new ApiException("Arena and Booking Not Found.");
         }
         if (arena == null) {
             throw new ApiException("Arena Not Found.");
-        }if (bookOffering == null) {
+        }
+        if (bookService == null) {
             throw new ApiException("Booking Not Found.");
         }
-        if(!arena.getIsActivated().equalsIgnoreCase("activated")){
+        if (!arena.getIsActivated().equalsIgnoreCase("activated")) {
             throw new ApiException("Arena not activated");
         }
 
-        // Validate that the booking is related to an offering in the arena
-        Offering offering = bookOffering.getOffering();
-        if (offering == null || !offering.getArena().getId().equals(arenaId)) {
-            throw new ApiException("Booking Does Not Belong to an Offering in This Arena.");
+        // Validate that the booking is related to a service offered by the exact arena
+        Service service = bookService.getService();
+        if (service == null || !service.getArena().getId().equals(arenaId)) {
+            throw new ApiException("Booking Does Not Belong to an Service in This Arena.");
         }
 
 
         // Handle acceptance or rejection
         if (isAccepted) {
             // Accept the booking
-            bookOffering.setStatus("Accepted");
+            bookService.setStatus("Accepted");
         } else {
             // Reject the booking
-            bookOffering.setStatus("Rejected");
+            bookService.setStatus("Rejected");
         }
 
         // Save the updated booking
-        bookOfferingRepository.save(bookOffering);
+        bookServiceRepository.save(bookService);
     }
 
-    // 3.2 Endpoint to get all accepted offering bookings for an arena
-    public List<BookOfferingDTO> getAllAcceptedOfferingBookings(Integer arenaId){
+    // 3.2 Endpoint to get all accepted service bookings for an arena
+    public List<BookServiceDTO> getAllAcceptedServiceBookings(Integer arenaId) {
         Arena arena = arenaRepository.findArenaById(arenaId);
-        if (arena == null ) {
+        if (arena == null) {
             throw new ApiException("Arena Not Found.");
         }
 
-        List<BookOffering> bookOfferings = bookOfferingRepository.findAll();
-        List<BookOfferingDTO> acceptedBookOfferingDTOS = new ArrayList<>();
-        for (BookOffering bookOffering : bookOfferings) {
-            if (bookOffering.getOffering().getArena().getId().equals(arenaId)
-                    && bookOffering.getStatus().equalsIgnoreCase("Accepted")) {
-                BookOfferingDTO bookOfferingDTO = new BookOfferingDTO(bookOffering.getStartDate(),bookOffering.getEndDate(),bookOffering.getStatus(),bookOffering.getBookingTimestamp());
-                acceptedBookOfferingDTOS.add(bookOfferingDTO);
+        List<BookService> bookServices = bookServiceRepository.findAll();
+        List<BookServiceDTO> acceptedServiceBookings = new ArrayList<>();
+        for (BookService bookService : bookServices) {
+            if (bookService.getService().getArena().getId().equals(arenaId)
+                    && bookService.getStatus().equalsIgnoreCase("Accepted")) {
+                BookServiceDTO bookServiceDTO = new BookServiceDTO(bookService.getStartDate(), bookService.getEndDate(), bookService.getBookingPrice(), bookService.getStatus(), bookService.getBookingTimestamp());
+                acceptedServiceBookings.add(bookServiceDTO);
             }
         }
-        return acceptedBookOfferingDTOS;
+        return acceptedServiceBookings;
     }
 
     // 3.3 Endpoint to allow arena to handel a sponsor event held request
@@ -143,10 +168,11 @@ public class ArenaService { //Renad
         }
         if (arena == null) {
             throw new ApiException("Arena Not Found.");
-        }if (eventHeldRequest == null) {
+        }
+        if (eventHeldRequest == null) {
             throw new ApiException("Event Held Request Not Found.");
         }
-        if(!arena.getIsActivated().equalsIgnoreCase("activated")){
+        if (!arena.getIsActivated().equalsIgnoreCase("activated")) {
             throw new ApiException("Arena not activated");
         }
 
@@ -174,19 +200,40 @@ public class ArenaService { //Renad
     }
 
     // 2.1 Allow Athlete to search for arena by athlete city
-    public List<ArenaDTO> searchArenaByCity(Integer athleteId) {
+    public List<ArenaDTO> searchArenasByAthleteCity(Integer athleteId) {
         Athlete athlete = athleteRepository.findAthleteById(athleteId);
-        if (athlete == null ) {
+        if (athlete == null) {
             throw new ApiException("Athlete Not Found.");
         }
         List<Arena> arenas = arenaRepository.findArenasByCity(athlete.getCity());
         if (arenas.isEmpty()) {
-            throw new ApiException("There Are No Arenas In " + athlete.getCity() +" Has Been Found Found.");
+            throw new ApiException("There Are No Arenas In " + athlete.getCity() + " Has Been Found Found.");
         }
 
         List<ArenaDTO> arenaDTOS = new ArrayList<>();
         for (Arena arena : arenas) {
-            ArenaDTO arenaDTO = new ArenaDTO(arena.getUsername(), arena.getName(), arena.getCity(), arena.getLocation());
+            // Map Services to ServiceDTO
+            List<ServiceDTO> serviceDTOS = new ArrayList<>();
+            for (Service service : arena.getServices()) {
+                serviceDTOS.add(new ServiceDTO(service.getName(), service.getDescription(), service.getPricePerDay()));
+            }
+
+            // Map Events to EventDTO
+            List<EventDTO> eventDTOS = new ArrayList<>();
+            for (Event event : arena.getEvents()) {
+                eventDTOS.add(new EventDTO(event.getName(), event.getDescription(), event.getCity(), event.getLocation(), event.getStartDate(), event.getEndDate()));
+            }
+
+            // Create ArenaDTO
+            ArenaDTO arenaDTO = new ArenaDTO(
+                    arena.getUsername(),
+                    arena.getName(),
+                    arena.getCity(),
+                    arena.getLocation(),
+                    serviceDTOS,
+                    eventDTOS
+            );
+
             arenaDTOS.add(arenaDTO);
         }
         return arenaDTOS;

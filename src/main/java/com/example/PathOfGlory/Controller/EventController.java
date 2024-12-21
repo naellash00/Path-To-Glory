@@ -33,11 +33,4 @@ public class EventController {  //Renad
         eventService.updateEvent(id, event);
         return ResponseEntity.status(200).body(new ApiResponse("Event Updated."));
     }
-
-    // Extra endpoint:
-    @GetMapping("/getEventsByDateRange/startDate/{startDate}/endDate/{endDate}")
-    public ResponseEntity<List<EventDTO>> getEventsByDateRange(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd")  Date endDate) {
-        List<EventDTO> events = eventService.getEventsByDateRange(startDate, endDate);
-        return ResponseEntity.ok(events);
-    }
 }

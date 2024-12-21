@@ -3,9 +3,12 @@ package com.example.PathOfGlory.Controller;
 import com.example.PathOfGlory.ApiResponse.ApiResponse;
 import com.example.PathOfGlory.DTO.ArenaDTO;
 import com.example.PathOfGlory.DTO.EventDTO;
+import com.example.PathOfGlory.DTO.SponsorDTO;
+import com.example.PathOfGlory.Service.SponsorService;
 import com.example.PathOfGlory.Model.Achievement;
 import com.example.PathOfGlory.Model.Athlete;
 import com.example.PathOfGlory.Model.BookCoach;
+import com.example.PathOfGlory.Model.SponsorShip;
 import com.example.PathOfGlory.Repository.ArenaRepository;
 import com.example.PathOfGlory.Service.*;
 import jakarta.validation.Valid;
@@ -23,11 +26,12 @@ import java.util.List;
 public class AthleteController { // Naelah
     private final AthleteService athleteService;
     private final BookCoachService bookCoachService;
-    private final BookOfferingService bookOfferingService;
+    private final BookServiceService bookServiceService;
     private final EventService eventService;
-    private final ArenaRepository arenaRepository;
     private final ArenaService arenaService;
+    private final SponsorService sponsorService;
 
+    // CRUD
     @GetMapping("/get")
     public ResponseEntity getAllAthletes() {
         return ResponseEntity.status(200).body(athleteService.getAllAthletes());
@@ -51,6 +55,7 @@ public class AthleteController { // Naelah
         return ResponseEntity.status(200).body(new ApiResponse("Athlete Deleted Successfully"));
     }
 
+    // Extra endpoints:
     @PostMapping("/request/coach/booking/{athlete_id}/{coach_username}")
     public ResponseEntity requestCoachBooking(@PathVariable Integer athlete_id, @PathVariable String coach_username, @RequestBody @Valid BookCoach booking) {
         bookCoachService.requestCoachBooking(athlete_id, coach_username, booking);
@@ -79,9 +84,9 @@ public class AthleteController { // Naelah
         return ResponseEntity.status(200).body(athleteService.findSameSportAndCityAthletes(sport_name, city));
     }
 
-    @PostMapping("/send/teammate/request/from/{sender_athlete_id}/to/{receiver_athlete_username}")
-    public ResponseEntity sendTeammateRequest(@PathVariable Integer sender_athlete_id, @PathVariable String receiver_athlete_username) {
-        athleteService.sendTeammateRequest(sender_athlete_id, receiver_athlete_username);
+    @PostMapping("/send/teammate/request/from/{sender_athlete_id}/to/{receiver_athlete_id}")
+    public ResponseEntity sendTeammateRequest(@PathVariable Integer sender_athlete_id, @PathVariable Integer receiver_athlete_id) {
+        athleteService.sendTeammateRequest(sender_athlete_id, receiver_athlete_id);
         return ResponseEntity.status(200).body(new ApiResponse("Teammate Request sent successfully"));
     }
 
@@ -90,17 +95,10 @@ public class AthleteController { // Naelah
         return ResponseEntity.status(200).body(athleteService.getAllTeammateRequests());
     }
 
-    @PutMapping("/accept/{athlete_id}/sponsorship/{sponsorship_id}")
-    public ResponseEntity acceptSponsorship(@PathVariable Integer athlete_id, @PathVariable Integer sponsorship_id){
-        athleteService.acceptSponsorship(athlete_id, sponsorship_id);
-        return ResponseEntity.status(200).body(new ApiResponse("SponsorShip Accepted Successfully"));
-    }
-
-    @PutMapping("/reject/{athlete_id}/sponsorship/{sponsorship_id}")
-    public ResponseEntity rejectSponsorShip(@PathVariable Integer athlete_id, @PathVariable Integer sponsorship_id){
-        athleteService.rejectSponsorShip(athlete_id, sponsorship_id);
-        return ResponseEntity.status(200).body(new ApiResponse("SponsorShip Rejected"));
-
+    @PostMapping("/add-sponsorship/{sponsor_id}/{athlete_id}")
+    public ResponseEntity sponsorAthlete(@PathVariable Integer sponsor_id,@PathVariable Integer athlete_id,@RequestBody @Valid SponsorShip sponsorShip) {
+        athleteService.sponsorShipRequest(sponsor_id,athlete_id,sponsorShip);
+        return ResponseEntity.status(200).body(new ApiResponse("Sponsor add sponsorship successfully"));
     }
 
     @PutMapping("/receiver-athlete/{receiver_athlete_id}/respond-to/teammate-request/{teammate_request_id}/{status}")
@@ -109,16 +107,17 @@ public class AthleteController { // Naelah
         return ResponseEntity.status(200).body(new ApiResponse("Response to teammate request sent successfully"));
     }
 
-    @PostMapping("/bookOffering/offeringId/{offeringId}/athleteId/{athleteId}/startDate/{startDate}/endDate/{endDate}")  //Renad
-    public ResponseEntity book(@PathVariable Integer offeringId, @PathVariable Integer athleteId, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd")  Date startDate, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd")  Date endDate) {
-        bookOfferingService.bookOffering(offeringId, athleteId, startDate, endDate);
-        return ResponseEntity.status(200).body(new ApiResponse("Booking Completed."));
-    }
-
     @PostMapping("/send-participate-request/athlete_id/{athlete_id}/eventNumber/{eventNumber}")
     public ResponseEntity requestParticipate(@PathVariable Integer athlete_id,@PathVariable Integer eventNumber) {
         athleteService.requestParticipateInEvent(athlete_id, eventNumber);
         return ResponseEntity.status(200).body(new ApiResponse("sent participation request successfully"));
+    }
+
+    //Renad
+    @PostMapping("/bookService/serviceId/{serviceId}/athleteId/{athleteId}/startDate/{startDate}/endDate/{endDate}")
+    public ResponseEntity bookService(@PathVariable Integer serviceId, @PathVariable Integer athleteId, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd")  Date startDate, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd")  Date endDate) {
+        bookServiceService.bookService(serviceId, athleteId, startDate, endDate);
+        return ResponseEntity.status(200).body(new ApiResponse("Booking Completed."));
     }
 
     //Renad
@@ -135,10 +134,30 @@ public class AthleteController { // Naelah
         return ResponseEntity.status(200).body(upcomingEvents);
     }
 
+    // Renad
+    @GetMapping("/getEventsByDateRange/athleteId/{athleteId}/startDate/{startDate}/endDate/{endDate}")
+    public ResponseEntity getEventsByDateRange(@PathVariable Integer athleteId, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd")  Date endDate) {
+        List<EventDTO> eventsByDateRange = eventService.getEventsByDateRange(athleteId,startDate, endDate);
+        return ResponseEntity.status(200).body(eventsByDateRange);
+    }
+
     //Renad
     @GetMapping("/searchArenasByAthleteCity/athleteId/{athleteId}")
     public ResponseEntity searchArenasByAthleteCity(@PathVariable Integer athleteId) {
-        List<ArenaDTO> arenaDTOS = arenaService.searchArenaByCity(athleteId);
+        List<ArenaDTO> arenaDTOS = arenaService.searchArenasByAthleteCity(athleteId);
         return ResponseEntity.status(200).body(arenaDTOS);
+    }
+
+    // Renad
+    @PutMapping("/handleSponsorshipRequest/athleteId/{athleteId}/sponsorshipId/{sponsorshipId}/isAccepted/{isAccepted}")
+    public ResponseEntity handleSponsorshipRequest(@PathVariable Integer athleteId, @PathVariable Integer sponsorshipId,@PathVariable Boolean isAccepted ) {
+        athleteService.handleSponsorshipRequest(athleteId,sponsorshipId,isAccepted);
+        return ResponseEntity.status(200).body(new ApiResponse("Request Handled."));
+    }
+
+    @GetMapping("/get-by-city/{city}")
+    public ResponseEntity getSponsorsByCity(@PathVariable String city) {
+        List<SponsorDTO> sponsorDTOS = athleteService.getSponsorsByCity(city);
+        return ResponseEntity.status(200).body(sponsorDTOS);
     }
 }

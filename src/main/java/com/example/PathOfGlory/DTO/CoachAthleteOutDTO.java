@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class CoachAthleteOutDTO { // Naelah
-    // this dto is is for the get coach athletes endpoint
+    // this dto is for the get coach athletes endpoint
     // to return less data for athlete
     private String fullName;
 

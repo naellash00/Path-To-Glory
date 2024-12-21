@@ -22,6 +22,15 @@ public class Sponsor {
     @Pattern(regexp = "^[a-zA-Z ]+$",message = "Enter just characters")
     @Column(columnDefinition = "varchar(20) not null unique")
     private String username;
+    @NotEmpty(message = "Please enter your password")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=\\S+$).{8,}$",message = "Password must be : " +
+            "At least 8 characters long\n" +
+            "Contains at least one digit\n" +
+            "Contains at least one lowercase letter\n" +
+            "Contains at least one uppercase letter\n" +
+            "Contains at least one special character from the set: !@#$%^&*")
+    @Column(columnDefinition = "varchar(20) not null")
+    private String password;
     @NotEmpty(message = "Please enter your name")
     @Pattern(regexp = "^[a-zA-Z ]+$",message = "Enter just characters")
     @Column(columnDefinition = "varchar(20) not null")
@@ -45,16 +54,15 @@ public class Sponsor {
     @Column(columnDefinition = "varchar(10)")
     private String isActivated;
 
-
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "athleteSponsor")
     private Set<SponsorShip> sponsorShipList;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "sponsor")
     private Set<EventHeldRequest> eventHeldRequestList;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "sponsor")
     private Set<EventParticipationRequest> eventParticipationRequestList;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "sponsor")
     private Set<Event> eventList;
 }

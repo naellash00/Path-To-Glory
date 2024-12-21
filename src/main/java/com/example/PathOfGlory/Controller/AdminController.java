@@ -34,7 +34,6 @@ public class AdminController {
     @PutMapping("/active-coach/{admin_id}/{coach_id}")
     public ResponseEntity activateCoach(@PathVariable Integer admin_id,@PathVariable Integer coach_id){
         adminService.activateCoach(admin_id,coach_id);
-        return ResponseEntity.status(200).body(new ApiResponse("Arena is activated"));
+        return ResponseEntity.status(200).body(new ApiResponse("Coach is activated"));
     }
-
 }

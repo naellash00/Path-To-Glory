@@ -3,6 +3,8 @@ package com.example.PathOfGlory.DTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class ArenaDTO {  //Renad
@@ -14,7 +16,7 @@ public class ArenaDTO {  //Renad
 
     private String location;
 
-//    private Set<Offering> offerings;
-//
-//    private Set<Event> events;
+    private List<ServiceDTO> services;
+
+    private List<EventDTO> events;
 }

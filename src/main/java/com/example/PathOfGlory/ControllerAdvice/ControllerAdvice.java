@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ConcurrentModificationException;
 
 @org.springframework.web.bind.annotation.ControllerAdvice
 public class ControllerAdvice {
@@ -48,55 +49,55 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity NoResourceFoundException(NoResourceFoundException e){
+    public ResponseEntity NoResourceFoundException(NoResourceFoundException e) {
         String message = e.getMessage();
         return ResponseEntity.status(400).body(message);
     }
 
     @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity NullPointerException(NullPointerException e){
+    public ResponseEntity NullPointerException(NullPointerException e) {
         String message = e.getMessage();
         return ResponseEntity.status(400).body(message);
     }
 
     @ExceptionHandler(IndexOutOfBoundsException.class)
-    public ResponseEntity IndexOutOfBoundsException(IndexOutOfBoundsException e){
+    public ResponseEntity IndexOutOfBoundsException(IndexOutOfBoundsException e) {
         String message = e.getMessage();
         return ResponseEntity.status(400).body(message);
     }
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity SQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e){
+    public ResponseEntity SQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e) {
         String message = e.getMessage();
         return ResponseEntity.status(400).body(message);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity MissingServletRequestParameterException(MissingServletRequestParameterException e){
+    public ResponseEntity MissingServletRequestParameterException(MissingServletRequestParameterException e) {
         String message = e.getMessage();
         return ResponseEntity.status(400).body(message);
     }
 
     @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
-    public ResponseEntity HttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException e){
+    public ResponseEntity HttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException e) {
         String message = e.getMessage();
         return ResponseEntity.status(400).body(message);
     }
 
     @ExceptionHandler(JpaSystemException.class)
-    public ResponseEntity JpaSystemException(JpaSystemException e){
+    public ResponseEntity JpaSystemException(JpaSystemException e) {
         String message = e.getMessage();
         return ResponseEntity.status(400).body(message);
     }
 
     @ExceptionHandler(MissingPathVariableException.class)
-    public ResponseEntity MissingPathVariableException(MissingPathVariableException e){
+    public ResponseEntity MissingPathVariableException(MissingPathVariableException e) {
         String message = e.getMessage();
         return ResponseEntity.status(400).body(message);
     }
 
     @ExceptionHandler(UnexpectedTypeException.class)
-    public ResponseEntity UnexpectedTypeException(UnexpectedTypeException e){
+    public ResponseEntity UnexpectedTypeException(UnexpectedTypeException e) {
         String message = e.getMessage();
         return ResponseEntity.status(400).body(message);
     }
@@ -109,20 +110,26 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(HttpMessageNotWritableException.class)
-    public ResponseEntity HttpMessageNotWritableException(HttpMessageNotWritableException e){
+    public ResponseEntity HttpMessageNotWritableException(HttpMessageNotWritableException e) {
         String message = e.getMessage();
         return ResponseEntity.status(400).body(message);
     }
 
     @ExceptionHandler(InvalidDataAccessResourceUsageException.class)
-    public ResponseEntity InvalidDataAccessResourceUsageException(InvalidDataAccessResourceUsageException e){
+    public ResponseEntity InvalidDataAccessResourceUsageException(InvalidDataAccessResourceUsageException e) {
         String message = e.getMessage();
         return ResponseEntity.status(400).body(message);
     }
 
     @ExceptionHandler(JpaObjectRetrievalFailureException.class)
-    public ResponseEntity JpaObjectRetrievalFailureException(JpaObjectRetrievalFailureException e){
+    public ResponseEntity JpaObjectRetrievalFailureException(JpaObjectRetrievalFailureException e) {
         String message = e.getMessage();
         return ResponseEntity.status(400).body(message);
     }
+
+//    @ExceptionHandler(ConcurrentModificationException.class)
+//    public ResponseEntity ConcurrentModificationException(ConcurrentModificationException e) {
+//        String message = e.getMessage();
+//        return ResponseEntity.status(400).body(message);
+//    }
 }

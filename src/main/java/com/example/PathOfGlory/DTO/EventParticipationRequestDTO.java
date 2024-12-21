@@ -1,5 +1,3 @@
-// Osama Alghamdi
-
 package com.example.PathOfGlory.DTO;
 import com.example.PathOfGlory.Model.Athlete;
 import com.example.PathOfGlory.Model.Sponsor;
@@ -8,8 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class EventParticipationRequestDTO {
-
+public class EventParticipationRequestDTO {// Osama Alghamdi
     private String status;
 
     private Sponsor sponsor;

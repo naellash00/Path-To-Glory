@@ -5,8 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class CoachOutDTO {
-
+public class CoachOutDTO { // Naelah
     private String fullName;
 
     private String username;
@@ -18,7 +17,4 @@ public class CoachOutDTO {
     private String email;
 
     private String sportDiscipline;
-
-    //  private Set<Athlete> athlete;
-
 }

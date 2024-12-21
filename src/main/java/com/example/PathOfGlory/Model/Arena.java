@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,13 @@ public class Arena {  //Renad
     @Column(columnDefinition = "varchar(25) not null unique")
     @Check(constraints = "length(username)>=4")
     private String username;
+
+    @NotEmpty(message = "Password can't be empty.")
+    @Size(min = 8, max = 20, message = "Password length must be between 8-20 characters.")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,20}$", message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.")
+    @Column(columnDefinition = "varchar(20) not null")
+    @Check(constraints = "length(password) >= 8")
+    private String password;
 
     @NotEmpty(message = "Name can't be empty.")
     @Size(min = 4, max = 15, message = "Name length must be between 4-15 characters.")
@@ -60,8 +68,8 @@ public class Arena {  //Renad
     @Column(columnDefinition = "varchar(10)")
     private String isActivated;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "arena")
-    private Set<Offering> offerings;
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "arena")
+    private Set<Service> services;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "arena")
     private Set<EventHeldRequest> eventHeldRequests;

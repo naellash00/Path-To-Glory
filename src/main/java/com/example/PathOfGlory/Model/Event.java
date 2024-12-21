@@ -4,17 +4,18 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Check;
 
 import java.util.Date;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @Entity
 @NoArgsConstructor
+@Getter
+@Setter
 public class Event {  //Renad
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +32,12 @@ public class Event {  //Renad
     @Column(columnDefinition = "int not null unique")
     @Check(constraints = "number>0")
     private Integer number;
+
+    @NotEmpty(message = "Description can't be empty.")
+    @Size(min = 20, max = 800, message = "Description length must be between 20-800 characters.")
+    @Column(columnDefinition = "varchar(800) not null")
+    @Check(constraints = "length(description)>=20")
+    private String description;
 
     @NotEmpty(message = "City can't be empty.")
     @Size(min = 4, max = 500, message = "City length must be between 4-500 characters.")
@@ -56,7 +63,7 @@ public class Event {  //Renad
 
     // status should be accepted - rejected - pending
     @Column(columnDefinition = "varchar(10)")
-    private String status;
+    private String status = "Pending";
 
     @ManyToOne
     @JsonIgnore
@@ -68,6 +75,5 @@ public class Event {  //Renad
 
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
-    @JsonIgnore
     private EventHeldRequest eventHeldRequest;
 }

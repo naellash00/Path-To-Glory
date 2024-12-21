@@ -20,5 +20,4 @@ public class BookCoachOutDTO { // Naelah
     private String athleteName;
 
     private String coachName;
-
 }

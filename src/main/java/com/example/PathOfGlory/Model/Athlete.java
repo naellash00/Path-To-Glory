@@ -6,6 +6,7 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Check;
 
 import java.util.Set;
 
@@ -26,6 +27,13 @@ public class Athlete { // Naelah
     @NotEmpty(message = "username cannot be empty")
     @Column(columnDefinition = "varchar(15) not null unique")
     private String username;
+
+    @NotEmpty(message = "Password can't be empty.")
+    @Size(min = 8, max = 20, message = "Password length must be between 8-20 characters.")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,20}$", message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.")
+    @Column(columnDefinition = "varchar(20) not null")
+    @Check(constraints = "length(password) >= 8")
+    private String password;
 
     @NotEmpty(message = "phone number cannot be empty")
     @Size(min = 10, max = 10, message = "phone number must be 10 digits")
@@ -51,9 +59,9 @@ public class Athlete { // Naelah
     @Column(columnDefinition = "varchar(15) not null")
     private String city;
 
-    @NotEmpty(message = "sport name cannot be empty")
+    @NotEmpty(message = "sport type cannot be empty")
     @Column(columnDefinition = "varchar(15) not null")
-    private String sportName;
+    private String sportType;
 
     // if athlete deleted --> their booking deleted too
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "athlete")
@@ -64,7 +72,10 @@ public class Athlete { // Naelah
     private Set<Achievement> achievements;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "athlete")
-    private Set<BookOffering> bookOfferings;
+    private Set<BookService> bookedServices;
+
+    @OneToMany(mappedBy = "athlete")
+    private Set<EventParticipationRequest> eventParticipationRequests;
 
     @OneToOne
     @JsonIgnore

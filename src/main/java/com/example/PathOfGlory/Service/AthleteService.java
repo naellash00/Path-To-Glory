@@ -3,6 +3,8 @@ package com.example.PathOfGlory.Service;
 import com.example.PathOfGlory.ApiResponse.ApiException;
 import com.example.PathOfGlory.DTO.AchievementOutDTO;
 import com.example.PathOfGlory.DTO.AthleteOutDTO;
+import com.example.PathOfGlory.DTO.SponsorDTO;
+import com.example.PathOfGlory.Repository.SponsorRepository;
 import com.example.PathOfGlory.DTO.TeammateRequestOutDTO;
 import com.example.PathOfGlory.Model.*;
 import com.example.PathOfGlory.Repository.*;
@@ -21,18 +23,10 @@ public class AthleteService { // Naelah
     private final AthleteRepository athleteRepository;
     private final TeammateRequestRepository teammateRequestRepository;
     private final SponsorShipRepository sponsorShipRepository;
-    private final OfferingRepository offeringRepository;
-    private final BookOfferingRepository bookOfferingRepository;
     private final EventRepository eventRepository;
     private final EventParticipationRequestRepository eventParticipationRequestRepository;
-    private final EventHeldRequestRepository eventHeldRequestRepository;
+    private final SponsorRepository sponsorRepository;
 
-
-//    private final AchievementRepository achievementRepository;
-//    private final TeammateRequestRepository teammateRequestRepository;
-//    public List<Athlete> getAllAthletes(){
-//        return athleteRepository.findAll();
-//    }
 
     public List<AthleteOutDTO> getAllAthletes() {
         List<Athlete> athletes = athleteRepository.findAll();
@@ -45,7 +39,7 @@ public class AthleteService { // Naelah
                 achievementOutDTOS.add(new AchievementOutDTO(achievement.getTitle(), achievement.getDescription()));
             }
 
-            AthleteOutDTO athleteOutDTO = new AthleteOutDTO(a.getFullName(), a.getUsername(), a.getAge(), a.getGender(), a.getCity(), a.getSportName(), achievementOutDTOS);
+            AthleteOutDTO athleteOutDTO = new AthleteOutDTO(a.getFullName(), a.getUsername(), a.getAge(), a.getGender(), a.getCity(), a.getSportType(), achievementOutDTOS);
             athleteOutDTOS.add(athleteOutDTO);
         }
         return athleteOutDTOS;
@@ -112,8 +106,8 @@ public class AthleteService { // Naelah
     }
 
     // extra endpoint 6 - Naelah
-    public List<AthleteOutDTO> findSameSportAndCityAthletes(String sport_name, String city) {
-        List<Athlete> sameSportAndCityAthletes = athleteRepository.findAthleteBySportNameAndCity(sport_name, city);
+    public List<AthleteOutDTO> findSameSportAndCityAthletes(String sportType, String city) {
+        List<Athlete> sameSportAndCityAthletes = athleteRepository.findAthleteBySportTypeAndCity(sportType, city);
         List<AthleteOutDTO> sameSportAndCityAthletesOutDTOS = new ArrayList<>();
         for (Athlete a : sameSportAndCityAthletes) {
             // achivement out dto
@@ -122,22 +116,22 @@ public class AthleteService { // Naelah
                 achievementOutDTOS.add(new AchievementOutDTO(achievement.getTitle(), achievement.getDescription()));
             }
 
-            AthleteOutDTO athleteOutDTO = new AthleteOutDTO(a.getFullName(), a.getUsername(), a.getAge(), a.getGender(), a.getCity(), a.getSportName(), achievementOutDTOS);
+            AthleteOutDTO athleteOutDTO = new AthleteOutDTO(a.getFullName(), a.getUsername(), a.getAge(), a.getGender(), a.getCity(), a.getSportType(), achievementOutDTOS);
             sameSportAndCityAthletesOutDTOS.add(athleteOutDTO);
         }
         return sameSportAndCityAthletesOutDTOS;
     }
 
     // extra endpoint 7 - Naelah
-    public void sendTeammateRequest(Integer sender_athlete_id, String receiver_athlete_username) {
+    public void sendTeammateRequest(Integer sender_athlete_id, Integer receiver_athlete_id) {
         // check both athlete exist
         Athlete senderAthlete = athleteRepository.findAthleteById(sender_athlete_id);
-        Athlete receiverAthlete = athleteRepository.findAthleteByUsername(receiver_athlete_username);
+        Athlete receiverAthlete = athleteRepository.findAthleteById(receiver_athlete_id);
         if (senderAthlete == null || receiverAthlete == null) {
             throw new ApiException("Athlete Not Found");
         }
         // check they are in the same city and same sport
-        if (!senderAthlete.getSportName().equalsIgnoreCase(receiverAthlete.getSportName())) {
+        if (!senderAthlete.getSportType().equalsIgnoreCase(receiverAthlete.getSportType())) {
             throw new ApiException("cannot send teammate request. sport filed are different");
         }
 
@@ -159,11 +153,6 @@ public class AthleteService { // Naelah
         teammateRequestRepository.save(teammateRequest);
     }
 
-//    public List<TeammateRequest> getAllTeammateRequests() {
-//
-//        return teammateRequestRepository.findAll();
-//    }
-
    public List<TeammateRequestOutDTO> getAllTeammateRequests(){
         List<TeammateRequest> teammateRequests = teammateRequestRepository.findAll();
         List<TeammateRequestOutDTO> teammateRequestOutDTOS = new ArrayList<>();
@@ -174,52 +163,28 @@ public class AthleteService { // Naelah
         return teammateRequestOutDTOS;
    }
 
-    //accept sponsorship request from sponsor
-    // extra endpoint 8 - Naelah
-    public void acceptSponsorship(Integer athlete_id, Integer sponsorship_id) {
-        // check athlete id and sponsorship id and
-        // check if this athlete is the same one in the request
-        Athlete athlete = athleteRepository.findAthleteById(athlete_id);
-        SponsorShip sponsorShip = sponsorShipRepository.findSponsorShipById(sponsorship_id);
-        if (athlete == null) {
-            throw new ApiException("athlete not found");
-        }
-        if (sponsorShip == null) {
-            throw new ApiException("sponsorship not found");
-        }
-        // check if its bending --> if the request is made
-        if (!(sponsorShip != null && sponsorShip.getStatus().equalsIgnoreCase("pending"))) {
-            throw new ApiException("sponsorship status not requested");
-        }
-        // check if it has the same athlete
-        if (!sponsorShip.getAthlete().getId().equals(athlete.getId())) {
-            throw new ApiException("Cannot accept this request. not the same athlete");
-        }
-        //sponsorShip.setAthlete(athlete);
-        sponsorShip.setStatus("accepted");
-        sponsorShipRepository.save(sponsorShip);
-    }
+    // Osama Alghamdi
+    // athlete send sponsorship request to sponsor
+    public void sponsorShipRequest(Integer sponsor_id,Integer athlete_id,SponsorShip sponsorShip) {
 
-    //extra endpoint 8 - Naelah
-    public void rejectSponsorShip(Integer athlete_id, Integer sponsorship_id) {
+        Sponsor sponsor = sponsorRepository.findSponsorById(sponsor_id);
         Athlete athlete = athleteRepository.findAthleteById(athlete_id);
-        SponsorShip sponsorShip = sponsorShipRepository.findSponsorShipById(sponsorship_id);
-        if (athlete == null) {
-            throw new ApiException("athlete not found");
+
+        if(sponsor == null || athlete == null) {
+            throw new ApiException("Sponsor or athlete not found");
         }
-        if (sponsorShip == null) {
-            throw new ApiException("sponsorship not found");
+
+        if (!sponsor.getIsActivated().equalsIgnoreCase("activated")){
+            throw new ApiException("The sponsor not activated");
         }
-        // check if its bending --> if the request is made
-        if (!(sponsorShip != null && sponsorShip.getStatus().equalsIgnoreCase("pending"))) {
-            throw new ApiException("sponsorship status not requested");
+
+        if(sponsorShip.getStatus()==null){
+            sponsorShip.setStatus("Pending");
+            sponsorShip.setAthlete(athlete);
+            sponsorShip.setAthleteSponsor(sponsor);
+            sponsorShipRepository.save(sponsorShip);
         }
-        // check if it has the same athlete
-        if (!sponsorShip.getAthlete().getId().equals(athlete.getId())) {
-            throw new ApiException("Cannot reject this request. not the same athlete");
-        }
-        sponsorShip.setStatus("rejected");
-        sponsorShipRepository.save(sponsorShip);
+
     }
 
     // get all athlete sponsor ship
@@ -263,7 +228,7 @@ public class AthleteService { // Naelah
     }
 
     // Renad
-    // Allow participants to cancel their participation in an event
+    // Endpoint to allow participants to cancel their participation in an event
     public void cancelEventParticipation(Integer athlete_id,Integer eventNumber){
         Athlete athlete = athleteRepository.findAthleteById(athlete_id);
         Event event = eventRepository.findEventByNumber(eventNumber);
@@ -280,5 +245,60 @@ public class AthleteService { // Naelah
         } else if (eventParticipationRequest == null) {
             throw new ApiException("Participation request not found for the athlete in this event.");
         }
+    }
+
+    // Renad
+    // Endpoint to allow athlete to handel a sponsorship request sent by a sponsor
+    public void handleSponsorshipRequest(Integer athleteId, Integer sponsorshipId, boolean isAccepted) {
+
+        // Validate arena and booking
+        Athlete athlete = athleteRepository.findAthleteById(athleteId);
+        SponsorShip sponsorShip = sponsorShipRepository.findSponsorShipById(sponsorshipId);
+
+        // Check if the sponsorship has been already accepted
+        if (sponsorShip.getStatus().equalsIgnoreCase("Accepted")) {
+            throw new ApiException("Sponsorship Already Accepted.");
+        }
+
+        // Check if the sponsorship has been already rejected
+        if (sponsorShip.getStatus().equalsIgnoreCase("Rejected")) {
+            throw new ApiException("Sponsorship Already Rejected.");
+        }
+
+        if (athlete == null && sponsorshipId == null) {
+            throw new ApiException("Athlete and Sponsorship Not Found.");
+        }
+        if (athlete == null) {
+            throw new ApiException("Athlete Not Found.");
+        }
+        if (sponsorshipId == null) {
+            throw new ApiException("Sponsorship Not Found.");
+        }
+
+        // Handle acceptance or rejection
+        if (isAccepted) {
+            // Accept the sponsorship
+            sponsorShip.setStatus("Accepted");
+        } else {
+            // Reject the sponsorship
+            sponsorShip.setStatus("Rejected");
+        }
+
+        // Save the updated sponsorship
+        sponsorShipRepository.save(sponsorShip);
+    }
+
+    // Osama
+    public List<SponsorDTO> getSponsorsByCity(String city){
+        List<Sponsor> sponsors = sponsorRepository.findAll();
+        List<SponsorDTO> sponsorDTOS = new ArrayList<>();
+        for (Sponsor s : sponsors) {
+            if(s.getCity().equals(city)){
+                SponsorDTO sponsorDTO = new SponsorDTO(s.getName(),s.getPhoneNumber(),s.getEmail(),s.getCity(),s.getCertificateRecord(),s.getSponsorShipList());
+                sponsorDTOS.add(sponsorDTO);
+            }
+
+        }
+        return sponsorDTOS;
     }
 }

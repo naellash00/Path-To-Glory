@@ -34,7 +34,6 @@ public class AdminService {
             sponsor.setIsActivated("activated");
             sponsorRepository.save(sponsor);
         }
-
     }
 
     public void activateArena(Integer admin_id,Integer arena_id){
@@ -47,7 +46,6 @@ public class AdminService {
             arena.setIsActivated("activated");
             arenaRepository.save(arena);
         }
-
     }
 
     public void activateCoach(Integer admin_id,Integer coach_id){
@@ -60,7 +58,5 @@ public class AdminService {
             coach.setIsActivated("activated");
             coachRepository.save(coach);
         }
-
     }
-
 }

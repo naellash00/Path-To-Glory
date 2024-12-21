@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class AthleteOutDTO { // Naelah
-
     private String fullName;
 
     private String username;
@@ -20,7 +19,7 @@ public class AthleteOutDTO { // Naelah
 
     private String city;
 
-    private String sportName;
+    private String sportType;
 
     private List<AchievementOutDTO> achievements;
 }

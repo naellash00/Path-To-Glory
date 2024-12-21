@@ -1,5 +1,3 @@
-
-
 package com.example.PathOfGlory.Service;
 
 import com.example.PathOfGlory.ApiResponse.ApiException;
@@ -23,9 +21,6 @@ public class BookCoachService { // Naelah
     private final AthleteRepository athleteRepository;
     private final CoachRepository coachRepository;
 
-//    public List<BookCoach> getAllBookings(){
-//        return bookCoachRepository.findAll();
-//    }
 
     public List<BookCoachOutDTO> getAllBookings() {
         List<BookCoach> bookings = bookCoachRepository.findAll();
@@ -52,7 +47,7 @@ public class BookCoachService { // Naelah
         }
 
         // check if athlete and coach has same sport type
-        if (!athlete.getSportName().equalsIgnoreCase(coach.getSportDiscipline())) {
+        if (!athlete.getSportType().equalsIgnoreCase(coach.getSportDiscipline())) {
             throw new ApiException("Your Sport Type Are Not Related. cannot book this coach");
         }
         // check if they are in the same city

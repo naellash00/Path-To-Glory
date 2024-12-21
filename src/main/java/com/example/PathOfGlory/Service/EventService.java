@@ -32,7 +32,7 @@ public class EventService { //Renad
         List<Event> events = eventRepository.findAll();
         List<EventDTO> eventDTOS = new ArrayList<>();
         for (Event event : events) {
-            EventDTO eventDTO = new EventDTO(event.getName(), event.getCity(), event.getLocation(), event.getStartDate(), event.getEndDate());
+            EventDTO eventDTO = new EventDTO(event.getName(), event.getDescription(), event.getCity(), event.getLocation(), event.getStartDate(), event.getEndDate());
             eventDTOS.add(eventDTO);
         }
         return eventDTOS;
@@ -45,6 +45,8 @@ public class EventService { //Renad
             throw new ApiException("Event Not Found.");
         }
         oldEvent.setName(event.getName());
+        oldEvent.setNumber(event.getNumber());
+        oldEvent.setDescription(event.getDescription());
         oldEvent.setCity(event.getCity());
         oldEvent.setLocation(event.getLocation());
         oldEvent.setStartDate(event.getStartDate());
@@ -70,14 +72,20 @@ public class EventService { //Renad
 
         List<EventDTO> upcomingEventsDTOS = new ArrayList<>();
         for (Event event : upcomingEvents) {
-            EventDTO eventDTO = new EventDTO(event.getName(), event.getCity(), event.getLocation(), event.getStartDate(), event.getEndDate());
+            EventDTO eventDTO = new EventDTO(event.getName(), event.getDescription(), event.getCity(), event.getLocation(), event.getStartDate(), event.getEndDate());
             upcomingEventsDTOS.add(eventDTO);
         }
         return upcomingEventsDTOS;
     }
 
     // Filter Events by Date Range
-    public List<EventDTO> getEventsByDateRange(Date startDate, Date endDate) {
+    public List<EventDTO> getEventsByDateRange(Integer athleteId, Date startDate, Date endDate) {
+        Athlete athlete = athleteRepository.findAthleteById(athleteId);
+
+        if (athlete == null) {
+            throw new ApiException("Athlete or Sponsor Not Found.");
+        }
+
         List<Event> events = eventRepository.findByStartDateBetween(startDate, endDate);
 
         if (events.isEmpty()) {
@@ -86,7 +94,7 @@ public class EventService { //Renad
 
         List<EventDTO> eventDTOS = new ArrayList<>();
         for (Event event : events) {
-            EventDTO eventDTO = new EventDTO(event.getName(), event.getCity(), event.getLocation(), event.getStartDate(), event.getEndDate());
+            EventDTO eventDTO = new EventDTO(event.getName(), event.getDescription(), event.getCity(), event.getLocation(), event.getStartDate(), event.getEndDate());
             eventDTOS.add(eventDTO);
         }
         return eventDTOS;

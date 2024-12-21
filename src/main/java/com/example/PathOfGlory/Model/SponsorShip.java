@@ -1,6 +1,7 @@
 // Osama Alghamdi
 
 package com.example.PathOfGlory.Model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -36,9 +37,9 @@ public class SponsorShip {
     private LocalDateTime endDate;
 
     @ManyToOne
+    @JsonIgnore
     private Sponsor athleteSponsor;
 
     @OneToOne
     private Athlete athlete;
-
 }
