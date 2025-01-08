@@ -12,32 +12,16 @@ Path to Glory is a platform designed to support Saudi athletes and aspiring indi
 - **Achievement Tracking**: Allows athletes to record and showcase their achievements.
 - **Sponsorships**: Enables athletes to link with sponsors to support their journey.
 
----
-
-### Links
- 
-- [Presentation](#https://github.com/naellash00/Path-To-Glory/blob/b50f36dec47c1e522ef6527d47f914a52dfbce0d/Path%20of%20Glory.pdf)  
-
----
-
-## Class Diagram
-
-![Class Diagram](#)
-
-## Use Case Diagram
-
-![Use Case Diagram](#)
 
 ---
 
 ## My Work on the Project
 
-### My Contributions:
-
 1. **Coach Management**: Implementation of the coach model, CRUD operations, and endpoints for retrieving coaches and their athletes.
-2. **Teammate Request Feature**: Developed logic for accepting or rejecting teammate requests, including validation and status updates.
-3. **Athlete Profile and Booking System**: Built athlete model with CRUD functionality, and implemented booking relationships with coaches.
-4. **Achievement Tracking**: Created functionality for athletes to track and manage their achievements.
+2.  **Athlete Management**: Implementation of the coach model, CRUD operations, and endpoints for retrieving coaches and their athletes.
+3. **Teammate Request Feature**: Developed logic for accepting or rejecting teammate requests, including validation and status updates.
+4. **Athlete Profile and Booking System**: Built athlete model with CRUD functionality, and implemented booking relationships with coaches.
+5. **Achievement Tracking**: Created functionality for athletes to track and manage their achievements.
 
 ### Extra Endpoints
 
