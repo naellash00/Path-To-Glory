@@ -1,76 +1,91 @@
-Model:
+# Path To Glory
 
--Athlete 
+**System Description**
 
--Achievement 
+Path to Glory is a platform designed to support Saudi athletes and aspiring individuals on their journey to the Olympics. This system facilitates connections with arenas that provide essential services, sponsors who can fund their ambitions, and fellow athletes in the same field, fostering collaboration and growth within the sports community
 
--Coach
+### Features
 
--BookCoach
+- **Athlete and Coach Management**: Comprehensive profiles for athletes and coaches, including age, city, and specialization.
+- **Session Booking**: Athletes can book coaching sessions directly with coaches.
+- **Teammate Requests**: Facilitates connection and collaboration between athletes through teammate requests.
+- **Achievement Tracking**: Allows athletes to record and showcase their achievements.
+- **Sponsorships**: Enables athletes to link with sponsors to support their journey.
 
--TeammateRequest
+---
 
-Service: 
+### Links
 
--AthleteService
+- [Figma Design](#)  
+- [Presentation](#)  
+- [Postman API Documentation](#)  
 
--BookCoachService
+---
 
--CoachService
+## Class Diagram
 
-Controller: 
+![Class Diagram](#)
 
--AthleteController
+## Use Case Diagram
 
--BookCoachController
+![Use Case Diagram](#)
 
--CoachController
+---
 
-Repository:
+## My Work on the Project
 
--AchievemntReopsitory
+### My Contributions:
 
--AthleteRepository
+1. **Coach Management**: Implementation of the coach model, CRUD operations, and endpoints for retrieving coaches and their athletes.
+2. **Teammate Request Feature**: Developed logic for accepting or rejecting teammate requests, including validation and status updates.
+3. **Athlete Profile and Booking System**: Built athlete model with CRUD functionality, and implemented booking relationships with coaches.
+4. **Achievement Tracking**: Created functionality for athletes to track and manage their achievements.
 
--BookCoachRepository
+### Extra Endpoints
 
--CoachRepository
+1. **GET** `/coaches` - Retrieve all coaches. *(CoachController)*
+2. **GET** `/coach/{coach_id}/athletes` - Retrieve athletes linked to a specific coach. *(CoachController)*
+3. **POST** `/teammate-request` - Create a teammate request. *(TeammateRequestController)*
+4. **PUT** `/teammate-request/{request_id}/accept` - Accept a teammate request. *(TeammateRequestController)*
+5. **PUT** `/teammate-request/{request_id}/reject` - Reject a teammate request. *(TeammateRequestController)*
+6. **POST** `/achievements` - Add a new achievement for an athlete. *(AchievementController)*
+7. **GET** `/athlete/{athlete_id}/achievements` - Retrieve achievements of an athlete. *(AchievementController)*
 
--TeammateRequestRepository
+---
 
-DTO:
+### Controllers:
 
--AchievemntOutDTO
+1. **CoachController**
+2. **AthleteController**
+3. **TeammateRequestController**
+4. **AchievementController**
 
--AthleteOutDTO
+### DTOs:
 
--CoachAthleteOutDTO
+1. **AthleteOutDTO**
+2. **CoachOutDTO**
+3. **TeammateRequestDTO**
+4. **AchievementOutDTO**
 
--BookCoachOutDTO
+### Models:
 
--CoachOutDTO
+1. **Athlete**
+2. **Coach**
+3. **TeammateRequest**
+4. **Achievement**
+5. **Sponsorship**
 
--TeammateRequestOutDTO
+### Repositories:
 
+1. **AthleteRepository**
+2. **CoachRepository**
+3. **TeammateRequestRepository**
+4. **AchievementRepository**
 
-Extra End-points:
+### Services:
 
--requestCoachBooking→ athleteController → POST 
+1. **CoachService**
+2. **AthleteService**
+3. **TeammateRequestService**
+4. **AchievementService**
 
--acceptBookingRequest/rejectBookingRequest → coachController → PUT
-
--getAllAcceptedBookings → bookCoachController → GET
-
--addAchievement → athleteController → POST
-
--getAthleteAchievements → athleteController → GET
-
--findSameSportAndCityAthletes → athleteController → GET
-
--sendTeammateRequest → athleteController → POST
-
--acceptSponsorship/rejectSponsorShip → athleteController → PUT
-
--getAllCoachAthletes → coachController → GET
-
--respondToTeammateRequest → athleteController → PUT 
