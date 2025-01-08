@@ -15,10 +15,8 @@ Path to Glory is a platform designed to support Saudi athletes and aspiring indi
 ---
 
 ### Links
-
-- [Figma Design](#)  
-- [Presentation](#)  
-- [Postman API Documentation](#)  
+ 
+- [Presentation](#https://github.com/naellash00/Path-To-Glory/blob/b50f36dec47c1e522ef6527d47f914a52dfbce0d/Path%20of%20Glory.pdf)  
 
 ---
 
